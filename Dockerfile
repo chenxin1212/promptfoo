@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:1
-FROM node:24.22.1-alpine AS base
+# Base image is overridable so builds behind a restricted network can point at an
+# internal registry mirror (e.g. a Harbor copy of node:24.22.1-alpine). The default
+# keeps upstream builds working unchanged.
+ARG NODE_IMAGE=node:24.22.1-alpine
+FROM ${NODE_IMAGE} AS base
 
 # Update Alpine packages to get latest security patches
 RUN apk upgrade --no-cache
