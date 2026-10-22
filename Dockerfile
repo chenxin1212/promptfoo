@@ -41,9 +41,7 @@ COPY site/package.json ./site/package.json
 # package the build needs. The specs must be exact directories: `npm rebuild esbuild`
 # matches every folder of that name anywhere in the tree, so a nested dependency aliased
 # to `esbuild` would get its install script run and defeat --ignore-scripts.
-# Leverage BuildKit cache
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --install-links --include=peer --ignore-scripts && \
+RUN npm ci --install-links --include=peer --ignore-scripts && \
     npm rebuild ./node_modules/esbuild
 
 # Copy the rest of the application code
@@ -60,8 +58,7 @@ COPY package.json package-lock.json ./
 # npm omits packages declared as both dev and optional dependencies with --omit=dev.
 # Remove this stage's dev declarations to retain those SDKs. Keep the lockfile
 # unchanged and copy the original manifest from the builder into the final image.
-RUN --mount=type=cache,target=/root/.npm \
-    npm pkg delete devDependencies && \
+RUN npm pkg delete devDependencies && \
     npm ci --omit=dev --workspaces=false --install-links --include=peer --ignore-scripts && \
     npm rebuild ./node_modules/esbuild
 
